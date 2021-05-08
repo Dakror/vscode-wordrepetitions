@@ -22,31 +22,37 @@ export function activate(context: vscode.ExtensionContext) {
             let map = new Map<string, number>();
             let ctr = 0;
             let pos = 0;
-            let regex = new RegExp(/^[a-zA-ZöäüÖÄÜß]+$/);
+            let regex = new RegExp(/(\p{L}+)/u);
             let diags: vscode.Diagnostic[] = [];
-            for (let word of words) {
-                if (word.match(regex) && !excludedList.includes(word)) {
-                    let val = map.get(word);
-                    if (val !== undefined && ctr - val < minDistance) {
-                        // add squiggle
-                        diags.push(
-                            new vscode.Diagnostic(
-                                new vscode.Range(
-                                    editor.document.positionAt(pos),
-                                    editor.document.positionAt(pos + word.length)
-                                ),
-                                `Duplicate word within min distance (${ctr - val} words ago)`,
-                                vscode.DiagnosticSeverity.Information
-                            )
-                        );
+            for (let token of words) {
+                const match = token.match(regex);
+                if (match) {
+                    const word = match[1].toLowerCase();
+                    if (!excludedList.includes(word)) {
+                        let val = map.get(word);
+                        if (val !== undefined && ctr - val < minDistance) {
+                            // add squiggle
+                            diags.push(
+                                new vscode.Diagnostic(
+                                    new vscode.Range(
+                                        editor.document.positionAt(pos),
+                                        editor.document.positionAt(pos + word.length)
+                                    ),
+                                    `Duplicate word within min distance (${
+                                        ctr - val + 1
+                                    } words ago)`,
+                                    vscode.DiagnosticSeverity.Information
+                                )
+                            );
+                        }
+                        val = ctr;
+                        map.set(word, val);
                     }
-                    val = ctr;
-                    map.set(word, val);
 
                     ctr++;
                 }
 
-                pos += word.length + 1;
+                pos += token.length + 1;
             }
 
             diag.set(editor.document.uri, diags);

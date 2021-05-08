@@ -1,9 +1,13 @@
 {
     "name": "wordrepeats",
-    "displayName": "WordRepeats",
+    "displayName": "Word Repetitions",
     "publisher": "dakrorgames",
     "description": "",
-    "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Dakror/vscode-wordrepetitions.git"
+    },
+    "version": "0.0.3",
     "engines": {
         "vscode": "^1.55.0"
     },
