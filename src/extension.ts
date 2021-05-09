@@ -38,9 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
                                         editor.document.positionAt(pos),
                                         editor.document.positionAt(pos + word.length)
                                     ),
-                                    `Duplicate word within min distance (${
-                                        ctr - val + 1
-                                    } words ago)`,
+                                    `Duplicate word within min distance (${ctr - val} words ago)`,
                                     vscode.DiagnosticSeverity.Information
                                 )
                             );
@@ -57,6 +55,10 @@ export function activate(context: vscode.ExtensionContext) {
 
             diag.set(editor.document.uri, diags);
         }
+    });
+
+    vscode.workspace.onDidChangeTextDocument((e) => {
+        vscode.commands.executeCommand("wordrepeats.findRepetitions");
     });
 }
 
